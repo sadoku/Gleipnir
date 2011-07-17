@@ -1,0 +1,18 @@
+"Gamemode"
+{
+    "name"  "Gleipnir
+    "version"   "0.1"
+
+    "author_name"   "+[SP]+ Macendo Saevus"
+    "author_email"  ""
+    "author_url"    ""
+
+    "icon"  ""
+    "info"  ""
+    "hide"  "0"
+
+	"mappattern"
+	{
+		"1"		"^rp_"
+	}
+}
