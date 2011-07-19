@@ -1,6 +1,6 @@
-BRP = BRP or {}
-BRP.Util = BRP.Util or {}
-BRP.Util.Entities = BRP.Util.Entities or {}
+GLEIP = GLEIP or {}
+GLEIP.Util = GLEIP.Util or {}
+GLEIP.Util.Entities = GLEIP.Util.Entities or {}
 
 
 
@@ -8,7 +8,7 @@ BRP.Util.Entities = BRP.Util.Entities or {}
 -- LET'S GO BIATCH
 
 --You should provide the full path :S
-function BRP.Util.Entities:LoadEntityFolder(directory)
+function GLEIP.Util.Entities:LoadEntityFolder(directory)
 	include(directory.."/shared.lua")
 	scripted_ents.Register(ENT, ENT.Name, false)
 end

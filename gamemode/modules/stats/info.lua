@@ -9,7 +9,6 @@ MODULE.Files = {
 		"cl_stats.lua",
 	},
 	Shared = {
-		"sh_stats.lua",
 	},
 	Server = {
 		"sv_stats.lua",

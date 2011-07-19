@@ -1,17 +1,17 @@
-BRP = {}
-BRP.Util = {}
+GLEIP = {}
+GLEIP.Util = {}
 
 
-function BRP.Util:Print(...)
-	BRP.Util.Striped = false
+function GLEIP.Util:Print(...)
+	GLEIP.Util.Striped = false
 	local toPrint
 	if (SERVER) then
-		Msg("[BRP:Server] ")
+		Msg("[GLEIP:Server] ")
 	end
 	if (CLIENT) then
-		Msg("[BRP:Client] ")
+		Msg("[GLEIP:Client] ")
 	end
-	if(BRP.Debug) then
+	if(GLEIP.Debug) then
 		local debuginfo =debug.getinfo(2)
 		Msg("function "..debuginfo.name.." at line "..tostring(debuginfo.currentline).." in file "..debuginfo.short_src.." printed: ")
 	end

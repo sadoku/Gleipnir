@@ -1,7 +1,7 @@
 DeriveGamemode("sandbox")
 GM.Name = "Gleipnir"
-BRP = BRP or {}
-BRP.Debug = BRP.Debug or true
+GLEIP = GLEIP or {}
+GLEIP.Debug = GLEIP.Debug or true
 DeriveGamemode("sandbox")
 AddCSLuaFile("butil.lua")
 AddCSLuaFile("sh_entities.lua")
@@ -16,4 +16,4 @@ function GM:PlayerSpawn(ply)
 	hook.Call("PlayerLoadout", {}, ply)
 end
 
-BRP.Modules:LoadModules()
+GLEIP.Modules:LoadModules()

@@ -1,18 +1,9 @@
 DeriveGamemode("sandbox")
-BRP = BRP or {}
-BRP.Debug = BRP.Debug or true
-local ols = string.sub
-string.sub = function(str, start, endp)
-	if type(start) == "string" then
-		debug.Trace()
-		Error("Failz")
-	else
-		return ols(str,start,endp)
-	end
-end
+GLEIP = GLEIP or {}
+GLEIP.Debug = GLEIP.Debug or true
 
-local bajs = getmetatable("")
-function bajs:__index(key)
+local strTbl = getmetatable("")
+function strTbl:__index(key)
 	if type(key) == "number" then
 		debug.Trace()
 	end
@@ -27,4 +18,4 @@ end
 include("butil.lua")
 include("sh_entities.lua")
 include("sh_module.lua")
-BRP.Modules:LoadModules()
+GLEIP.Modules:LoadModules()

@@ -1,5 +1,5 @@
 function MODULE:PlayerInitialSpawn(ply)
-	BRP.Util:Print("Initial spawn")
+	GLEIP.Util:Print("Initial spawn")
 	ply.stamina = 5
 	ply.agility = 10
 	self:UpdateStat(ply, "agility")

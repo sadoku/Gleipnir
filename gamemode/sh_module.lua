@@ -1,10 +1,10 @@
-BRP = BRP or {}
-BRP.Modules = BRP.Modules or {}
-BRP.Modules.Modules = BRP.Modules.Modules or {}
-BRP.Modules.BasePath = "gleipnir/gamemode/modules"
+GLEIP = GLEIP or {}
+GLEIP.Modules = GLEIP.Modules or {}
+GLEIP.Modules.Modules = GLEIP.Modules.Modules or {}
+GLEIP.Modules.BasePath = "gleipnir/gamemode/modules"
 local FileTable = {}
 local LoadedTemp = {}
-function BRP.Modules:TraverseDir(dir, parent)
+function GLEIP.Modules:TraverseDir(dir, parent)
 	local TemporaryDirectoryStorage = {}
 	local CachedFileFind = file.FindInLua(dir)
 	for v,k in pairs(CachedFileFind) do
@@ -13,9 +13,9 @@ function BRP.Modules:TraverseDir(dir, parent)
 				TemporaryDirectoryStorage[k] = { path = self:SanitizePath(dir)..k}
 				--TemporaryDirectoryStorage[k]['parent'] = parent
 				TemporaryDirectoryStorage[k]['dir'] = self:TraverseDir(self:SanitizePath(dir)..k.."/*", TemporaryDirectoryStorage[k])
-				BRP.Util:Print(self:SanitizePath(dir)..k.." is a dir")
+				GLEIP.Util:Print(self:SanitizePath(dir)..k.." is a dir")
 			else
-				BRP.Util:Print(self:SanitizePath(dir)..k.." is not a dir")
+				GLEIP.Util:Print(self:SanitizePath(dir)..k.." is not a dir")
 				-- Probaly the worst way you can do a regular expression, sue me
 				TemporaryDirectoryStorage[string.gsub(k, ".lua", "")] = {file = k, path = self:SanitizePath(dir)..k}
 			end
@@ -27,7 +27,7 @@ end
 local function PreliminaryModuleLoad( fileInfo, id, parent )
 	local LoadedTemp = parent or LoadedTemp
 	_G['MODULE'] = {}
-	BRP.Util:Print("About to include "..fileInfo.dir.info.path)
+	GLEIP.Util:Print("About to include "..fileInfo.dir.info.path)
 	include(tostring(fileInfo.dir.info.path))
 	LoadedTemp[id] = _G['MODULE']
 	_G['MODULE'] = nil
@@ -40,16 +40,16 @@ end
 local function CheckDependencies( moduleTable )
 	for v,k in pairs( moduleTable.Dependencies ) do
 		if( LoadedTemp[ k.name ] != nil )  then
-			BRP.Util:Print("Found dependency "..tostring(k.name).." of "..tostring(moduleTable.Name))
+			GLEIP.Util:Print("Found dependency "..tostring(k.name).." of "..tostring(moduleTable.Name))
 		else
-			BRP.Util:Print("Failed to find "..tostring(moduleTable.Name).."'s dependency "..tostring(k.name))
+			GLEIP.Util:Print("Failed to find "..tostring(moduleTable.Name).."'s dependency "..tostring(k.name))
 			return false
 		end
 	end
 	return true
 end
 
-function BRP.Modules:ConvertPT(path)
+function GLEIP.Modules:ConvertPT(path)
 	local path = string.gsub(path, "gleipnir/gamemode/modules/", "")
 	local Last = FileTable
 	local ExplodedPath = string.Explode("/", path)
@@ -64,7 +64,7 @@ function BRP.Modules:ConvertPT(path)
 			-- It's a file, they can't contain stuff
 			return Last[LuaRemoved]
 		else
-			BRP.Util:Print("FAILED TO FIND PATH: "..path)
+			GLEIP.Util:Print("FAILED TO FIND PATH: "..path)
 			return {}, false
 		end
 
@@ -93,13 +93,13 @@ local function LoadModule(moduleTable, parent)
 		}, {__index = _G})]]
 
 		_G['MODULE'] = moduleTable
-		local parent = parent or BRP.Modules.Modules
+		local parent = parent or GLEIP.Modules.Modules
 		--[[
 		_G['MODULE'].GetSub = function(self, sub)
 			print("In GetSub")
-			if(self.Subs == nil or self.Subs[sub] == nil) then BRP.Util:Print("Module "..self.Name.." tried to load a submodule "..tostring(sub).." which is not specified") return false end
+			if(self.Subs == nil or self.Subs[sub] == nil) then GLEIP.Util:Print("Module "..self.Name.." tried to load a submodule "..tostring(sub).." which is not specified") return false end
 			print("Passed if check")	
-			local directory = BRP.Modules:ConvertPT(moduleTable.path)[sub]
+			local directory = GLEIP.Modules:ConvertPT(moduleTable.path)[sub]
 			PrintTable(directory)
 			local ptable = PreliminaryModuleLoad(directory, sub, self)
 			ptable.parent = self
@@ -110,9 +110,9 @@ local function LoadModule(moduleTable, parent)
 		moduleTable.callOnLoad = function(self, mod, callback)
 			MsgN("parent[mod]: "..tostring(parent[mod]))
 			MsgN("mod: "..tostring(mod))
-			if BRP.Modules.Modules[mod] ~= nil then
+			if GLEIP.Modules.Modules[mod] ~= nil then
 				MsgN("Calling callback for "..mod)
-				callback(BRP.Modules.Modules[mod])
+				callback(GLEIP.Modules.Modules[mod])
 			else
 				callBack[mod] = callBack[mod] or {}
 				table.insert(callBack[mod], callback)
@@ -165,7 +165,7 @@ local function LoadModule(moduleTable, parent)
 end
 
 
-function BRP.Modules:LoadModules()
+function GLEIP.Modules:LoadModules()
 	FileTable = self:TraverseDir(self.BasePath.."/*")
 	PrintTable(FileTable)
 	local PreliminaryModuleLoad = PreliminaryModuleLoad -- Small speed boost
@@ -206,20 +206,20 @@ function BRP.Modules:LoadModules()
 	
 end
 
-function BRP.Modules:SanitizePath( path )
+function GLEIP.Modules:SanitizePath( path )
 	return string.gsub(path, "([\*]+)", "")
 end
 
 -- Everything builds on events :P
-BRP.Call = BRP.Call or hook.Call
+GLEIP.Call = GLEIP.Call or hook.Call
 hook.Call = function(name, gm, ...)
-	if(BRP.Modules.Modules) then
+	if(GLEIP.Modules.Modules) then
 		local results = {}
-		for v,k in pairs(BRP.Modules.Modules) do
+		for v,k in pairs(GLEIP.Modules.Modules) do
 			if(k[name]) then
 				local time = SysTime()
 				status, error = pcall(k[name], k, ...)
-				if not (name == "HUDShouldDraw" or name == "ShouldDrawLocalPlayer" or name == "CalcView" or name == "PostDrawOpaqueRenderables") and BRP.Debug then
+				if not (name == "HUDShouldDraw" or name == "ShouldDrawLocalPlayer" or name == "CalcView" or name == "PostDrawOpaqueRenderables") and GLEIP.Debug then
 					results[v] = SysTime()-time
 				end
 				if(status == false) then
@@ -235,6 +235,6 @@ hook.Call = function(name, gm, ...)
 			print("For hook "..name.." in mod "..k.." it took "..tostring(v))
 		end
 	end
-	return BRP.Call(name, gm, ...)
+	return GLEIP.Call(name, gm, ...)
 end
 
