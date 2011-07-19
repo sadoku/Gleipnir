@@ -70,17 +70,12 @@ function GLEIP.Modules:ConvertPT(path)
 
 	end
 end
-local function SanxboxIt(functionz, tablz)
-	local sandbox = {}
-	setmetatable(sandbox, {
+local moduleEnv = setmetatable({}, { -- This is where all your modules belong to us. (It's possible this is the worst performance hog, ever.)
 		__index = function(table, key)
-			return _G['key']
+			-- This lets us use util functions
+			return GLEIP.Util[key] or _G[key]
 		end,
-		__newindex = function(table,key, value)
-			tablz[key] = value
-		end
 	})
-end
 
 callBack = {}
 local function LoadModule(moduleTable, parent)
@@ -91,7 +86,6 @@ local function LoadModule(moduleTable, parent)
 		
 			end
 		}, {__index = _G})]]
-
 		_G['MODULE'] = moduleTable
 		local parent = parent or GLEIP.Modules.Modules
 		--[[
@@ -107,11 +101,17 @@ local function LoadModule(moduleTable, parent)
 			-- CONTINUE HERE, for some reason does not end up in self
 
 		end]]
+		-- You can use this from inside modules to get a call when a module is loaded.
+		-- Only useful during the init phase.
 		moduleTable.callOnLoad = function(self, mod, callback)
-			MsgN("parent[mod]: "..tostring(parent[mod]))
-			MsgN("mod: "..tostring(mod))
+			if GLEIP.Debug then
+				MsgN("parent[mod]: "..tostring(parent[mod]))
+				MsgN("mod: "..tostring(mod))
+			end
 			if GLEIP.Modules.Modules[mod] ~= nil then
-				MsgN("Calling callback for "..mod)
+				if GLEIP.Debug then
+					MsgN("Calling callback for "..mod)
+				end
 				callback(GLEIP.Modules.Modules[mod])
 			else
 				callBack[mod] = callBack[mod] or {}
@@ -125,7 +125,7 @@ local function LoadModule(moduleTable, parent)
 			if(SERVER) then
 				AddCSLuaFile(moduleTable.path.."/"..k)
 			end
-			local status,err = pcall(CompileFile(moduleTable.path.."/"..k,moduleTable.path.."/"..k))
+			local status,err = pcall(setfenv(CompileFile(moduleTable.path.."/"..k,moduleTable.path.."/"..k), moduleEnv))
 			if err then
 				print(k.." failed: "..tostring(err))
 			end
@@ -133,7 +133,7 @@ local function LoadModule(moduleTable, parent)
 		end
 		if(SERVER) then
 			for v,k in pairs(moduleTable.Files.Server) do
-				local status, err = pcall(CompileFile(moduleTable.path.."/"..k,moduleTable.path.."/"..k))
+				local status, err = pcall(setfenv(CompileFile(moduleTable.path.."/"..k,moduleTable.path.."/"..k), moduleEnv))
 				if err then
 					print(k.." failed: "..tostring(err))
 				end
@@ -142,7 +142,7 @@ local function LoadModule(moduleTable, parent)
 		end
 		for v,k in pairs(moduleTable.Files.Client) do
 			if(CLIENT) then
-				status, err = pcall(CompileFile(moduleTable.path.."/"..k, moduleTable.path.."/"..k))
+				status, err = pcall(setfenv(CompileFile(moduleTable.path.."/"..k, moduleTable.path.."/"..k), moduleEnv))
 				print(k.." lolled this, status: "..tostring(status).." error: "..tostring(err))
 			else
 				AddCSLuaFile(moduleTable.path.."/"..k)
@@ -164,7 +164,7 @@ local function LoadModule(moduleTable, parent)
 	end
 end
 
-
+-- The function that makes it all load and run ;) (Should only be called by Gleipnir)
 function GLEIP.Modules:LoadModules()
 	FileTable = self:TraverseDir(self.BasePath.."/*")
 	PrintTable(FileTable)
@@ -211,7 +211,10 @@ function GLEIP.Modules:SanitizePath( path )
 end
 
 -- Everything builds on events :P
-GLEIP.Call = GLEIP.Call or hook.Call
+-- It has some simple profiling, enable it by setting GLEIP.Debug to true
+-- A small performance boost can be had by commenting out debug
+-- Perhaps some postprocessing tool ran ontop of this?
+local oldcall = hook.Call
 hook.Call = function(name, gm, ...)
 	if(GLEIP.Modules.Modules) then
 		local results = {}
@@ -222,19 +225,18 @@ hook.Call = function(name, gm, ...)
 				if not (name == "HUDShouldDraw" or name == "ShouldDrawLocalPlayer" or name == "CalcView" or name == "PostDrawOpaqueRenderables") and GLEIP.Debug then
 					results[v] = SysTime()-time
 				end
-				if(status == false) then
+				if(status == false) then -- If the module fails to often, maybe notice admins and nil the module?
 					ErrorNoHalt(error)
 					Msg("\n")
-				end
-				if(error != nil) then
+				elseif(error != nil) then
 					return error
 				end
 			end
 		end
 		for k,v in pairs(results) do
-			print("For hook "..name.." in mod "..k.." it took "..tostring(v))
+			print("For hook "..name.." in module "..k.." it took "..tostring(v))
 		end
 	end
-	return GLEIP.Call(name, gm, ...)
+	return oldcall(name, gm, ...)
 end
 

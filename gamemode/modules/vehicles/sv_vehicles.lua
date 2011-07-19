@@ -28,7 +28,7 @@ end
 function MODULE:SpawnVehicle(owner, vtype, pos)
 	local pos = pos or owner:GetPos() + (owner:GetAngles():Forward()*150)
 	if(self.Vehicles[vtype] ~= nil) then
-		GLEIP.Util:Print("Found ya, stuff")
+		Print("Found ya, stuff")
 		local  vehicle = ents.Create("prop_vehicle_jeep")
 		vehicle.vtype = vtype
 		vehicle.fuel = self.Vehicles[vtype].fuel
@@ -54,7 +54,7 @@ function MODULE:SpawnVehicle(owner, vtype, pos)
 			end
 		end
 		vehicle:Spawn()
-	else GLEIP.Util:Print("Failed") return false end
+	else Print("Failed") return false end
 end
 
 function MODULE:Think()
@@ -94,7 +94,7 @@ function MODULE:PlayerUse(ply, ent)
 		local ent = ent
 		if(ent.parent) then ent = ent.parent end
 		umsg.Start("_DoEnter", ply)
-			GLEIP.Util:Print(#ent.Seats)
+			Print(#ent.Seats)
 			umsg.Entity(ent)
 			umsg.Short(#ent.Seats)
 			for v,k in pairs(ent.Seats) do
