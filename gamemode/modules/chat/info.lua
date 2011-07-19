@@ -4,6 +4,7 @@ MODULE.Dependencies = {
 }
 MODULE.Files = {
 	Client = {
+		"cl_chat.lua"
 	},
 	Shared = {
 	},
