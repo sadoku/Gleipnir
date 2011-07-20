@@ -13,9 +13,9 @@ function GLEIP.Modules:TraverseDir(dir, parent)
 				TemporaryDirectoryStorage[k] = { path = self:SanitizePath(dir)..k}
 				--TemporaryDirectoryStorage[k]['parent'] = parent
 				TemporaryDirectoryStorage[k]['dir'] = self:TraverseDir(self:SanitizePath(dir)..k.."/*", TemporaryDirectoryStorage[k])
-				GLEIP.Util:Print(self:SanitizePath(dir)..k.." is a dir")
+				GLEIP.Util.print(self:SanitizePath(dir)..k.." is a dir")
 			else
-				GLEIP.Util:Print(self:SanitizePath(dir)..k.." is not a dir")
+				GLEIP.Util.print(self:SanitizePath(dir)..k.." is not a dir")
 				-- Probaly the worst way you can do a regular expression, sue me
 				TemporaryDirectoryStorage[string.gsub(k, ".lua", "")] = {file = k, path = self:SanitizePath(dir)..k}
 			end
@@ -27,7 +27,7 @@ end
 local function PreliminaryModuleLoad( fileInfo, id, parent )
 	local LoadedTemp = parent or LoadedTemp
 	_G['MODULE'] = {}
-	GLEIP.Util:Print("About to include "..fileInfo.dir.info.path)
+	GLEIP.Util.print("About to include "..fileInfo.dir.info.path)
 	include(tostring(fileInfo.dir.info.path))
 	LoadedTemp[id] = _G['MODULE']
 	_G['MODULE'] = nil
@@ -40,9 +40,9 @@ end
 local function CheckDependencies( moduleTable )
 	for v,k in pairs( moduleTable.Dependencies ) do
 		if( LoadedTemp[ k.name ] != nil )  then
-			GLEIP.Util:Print("Found dependency "..tostring(k.name).." of "..tostring(moduleTable.Name))
+			GLEIP.Util.print("Found dependency "..tostring(k.name).." of "..tostring(moduleTable.Name))
 		else
-			GLEIP.Util:Print("Failed to find "..tostring(moduleTable.Name).."'s dependency "..tostring(k.name))
+			GLEIP.Util.print("Failed to find "..tostring(moduleTable.Name).."'s dependency "..tostring(k.name))
 			return false
 		end
 	end
@@ -64,7 +64,7 @@ function GLEIP.Modules:ConvertPT(path)
 			-- It's a file, they can't contain stuff
 			return Last[LuaRemoved]
 		else
-			GLEIP.Util:Print("FAILED TO FIND PATH: "..path)
+			GLEIP.Util.print("FAILED TO FIND PATH: "..path)
 			return {}, false
 		end
 
@@ -91,7 +91,7 @@ local function LoadModule(moduleTable, parent)
 		--[[
 		_G['MODULE'].GetSub = function(self, sub)
 			print("In GetSub")
-			if(self.Subs == nil or self.Subs[sub] == nil) then GLEIP.Util:Print("Module "..self.Name.." tried to load a submodule "..tostring(sub).." which is not specified") return false end
+			if(self.Subs == nil or self.Subs[sub] == nil) then GLEIP.Util.print("Module "..self.Name.." tried to load a submodule "..tostring(sub).." which is not specified") return false end
 			print("Passed if check")	
 			local directory = GLEIP.Modules:ConvertPT(moduleTable.path)[sub]
 			PrintTable(directory)

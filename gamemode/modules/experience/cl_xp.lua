@@ -2,7 +2,6 @@ local function UpdateXP(um)
 	LocalPlayer().xp = um:ReadLong()
 	LocalPlayer().mxp = um:ReadLong()
 	LocalPlayer().level = um:ReadLong()
-	GLEIP.Util:Print("Got XP update")
 end
 
 local function LevelUp(um)
