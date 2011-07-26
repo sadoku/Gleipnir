@@ -9,6 +9,8 @@ weapons.Register({
 	DrawAmmo = false,
 	DrawCrosshair = true,
 	Base = "weapon_base",
+	Category = "Gleipnir",
+	Spawnable = true,
 	Initialize = function(self)
 		self:SetWeaponHoldType("normal")
 	end,
