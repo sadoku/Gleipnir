@@ -24,7 +24,7 @@ function MODULE:CallScreenClickHook(click, mc, aimvc)
 				else
 					setfenv(v, {e = trc.Entity, LocalPlayer = LocalPlayer})
 					local result = v()
-					print("V result: "..tostring(result))
+					print("NGWI handler result for "..k..": "..tostring(result))
 					if result then
 						menu:AddOption(k, function() RunConsoleCommand("ngwi"..string.Replace(k, " ", "_"), tostring(trc.Entity:EntIndex())) end)
 					end
@@ -32,6 +32,6 @@ function MODULE:CallScreenClickHook(click, mc, aimvc)
 			end
 			menu:Open()
 		end
-		PrintTable(trc)
+		--PrintTable(trc)
 	end
 end

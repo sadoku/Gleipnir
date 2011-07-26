@@ -4,6 +4,11 @@ GLEIP.Modules.Modules = GLEIP.Modules.Modules or {}
 GLEIP.Modules.BasePath = "gleipnir/gamemode/modules"
 local FileTable = {}
 local LoadedTemp = {}
+
+function GLEIP.Modules:SanitizePath( path )
+	return string.gsub(path, "([\*]+)", "")
+end
+
 function GLEIP.Modules:TraverseDir(dir, parent)
 	local TemporaryDirectoryStorage = {}
 	local CachedFileFind = file.FindInLua(dir)
@@ -204,10 +209,6 @@ function GLEIP.Modules:LoadModules()
 		LoadModule(k)
 	end
 	
-end
-
-function GLEIP.Modules:SanitizePath( path )
-	return string.gsub(path, "([\*]+)", "")
 end
 
 -- Everything builds on events :P
