@@ -3,7 +3,7 @@ weapons.Register({
 	Instructions = "Left click fire, right click zoom",
 	Contact = "",
 	Purpose = "",
-	PrintName = "Ak47",
+	PrintName = "Ak",
 	Slot = 3,
 	SlotPos = 1,
 	IconLetter = "b",
