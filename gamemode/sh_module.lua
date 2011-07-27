@@ -18,9 +18,9 @@ function GLEIP.Modules:TraverseDir(dir, parent)
 				TemporaryDirectoryStorage[k] = { path = self:SanitizePath(dir)..k}
 				--TemporaryDirectoryStorage[k]['parent'] = parent
 				TemporaryDirectoryStorage[k]['dir'] = self:TraverseDir(self:SanitizePath(dir)..k.."/*", TemporaryDirectoryStorage[k])
-				GLEIP.Util.print(self:SanitizePath(dir)..k.." is a dir")
+				--GLEIP.Util.print(self:SanitizePath(dir)..k.." is a dir")
 			else
-				GLEIP.Util.print(self:SanitizePath(dir)..k.." is not a dir")
+				--GLEIP.Util.print(self:SanitizePath(dir)..k.." is not a dir")
 				-- Probaly the worst way you can do a regular expression, sue me
 				TemporaryDirectoryStorage[string.gsub(k, ".lua", "")] = {file = k, path = self:SanitizePath(dir)..k}
 			end
@@ -32,7 +32,7 @@ end
 local function PreliminaryModuleLoad( fileInfo, id, parent )
 	local LoadedTemp = parent or LoadedTemp
 	_G['MODULE'] = {}
-	GLEIP.Util.print("About to include "..fileInfo.dir.info.path)
+	--GLEIP.Util.print("About to include "..fileInfo.dir.info.path)
 	include(tostring(fileInfo.dir.info.path))
 	LoadedTemp[id] = _G['MODULE']
 	_G['MODULE'] = nil
@@ -83,6 +83,16 @@ local moduleEnv = setmetatable({}, { -- This is where all your modules belong to
 	})
 
 callBack = {}
+
+local function compileAndPcall(name, path)
+	local compiled = CompileFile(path)
+	if not compiled then return false end
+	local err, msg = pcall(setfenv(compiled, moduleEnv))
+	if !err then
+		Error(name.." failed: "..msg) -- I'm just gonna kill everything here
+		return false
+	end
+end
 local function LoadModule(moduleTable, parent)
 	if(CheckDependencies(moduleTable)) then
 
@@ -130,25 +140,18 @@ local function LoadModule(moduleTable, parent)
 			if(SERVER) then
 				AddCSLuaFile(moduleTable.path.."/"..k)
 			end
-			local status,err = pcall(setfenv(CompileFile(moduleTable.path.."/"..k,moduleTable.path.."/"..k), moduleEnv))
-			if err then
-				print(k.." failed: "..tostring(err))
-			end
-			include(moduleTable.path.."/"..k)
+			compileAndPcall(moduleTable.path.."/"..k,moduleTable.path.."/"..k)
+			--include(moduleTable.path.."/"..k)
 		end
 		if(SERVER) then
 			for v,k in pairs(moduleTable.Files.Server) do
-				local status, err = pcall(setfenv(CompileFile(moduleTable.path.."/"..k,moduleTable.path.."/"..k), moduleEnv))
-				if err then
-					print(k.." failed: "..tostring(err))
-				end
+				compileAndPcall(moduleTable.path.."/"..k,moduleTable.path.."/"..k)
 				--include(moduleTable.path.."/"..k)
 			end
 		end
 		for v,k in pairs(moduleTable.Files.Client) do
 			if(CLIENT) then
-				status, err = pcall(setfenv(CompileFile(moduleTable.path.."/"..k, moduleTable.path.."/"..k), moduleEnv))
-				print(k.." lolled this, status: "..tostring(status).." error: "..tostring(err))
+				compileAndPcall(moduleTable.path.."/"..k, moduleTable.path.."/"..k)
 			else
 				AddCSLuaFile(moduleTable.path.."/"..k)
 			end
@@ -172,19 +175,19 @@ end
 -- The function that makes it all load and run ;) (Should only be called by Gleipnir)
 function GLEIP.Modules:LoadModules()
 	FileTable = self:TraverseDir(self.BasePath.."/*")
-	PrintTable(FileTable)
+	--PrintTable(FileTable)
 	local PreliminaryModuleLoad = PreliminaryModuleLoad -- Small speed boost
 	function TraverseModules(files)
 		for v,k in pairs(files) do
 			print(v)
 			if type(v) == "table" then
-				print("Chekzing "..tostring(v))
-				PrintTable(v)
+				--print("Chekzing "..tostring(v))
+				--PrintTable(v)
 			else
-				print("Chekzing "..tostring(v))
+				--print("Chekzing "..tostring(v))
 			end
 			if(k.dir ~= nil and k.dir.info  ~= nil and k.dir.info.path ~= nil) then
-				print("Loading "..tostring(k).."    LAL    "..tostring(v))
+				--print("Loading "..tostring(k).."    LAL    "..tostring(v))
 				PreliminaryModuleLoad(k, v)
 			end
 			--print("k.dir: "..tostring(k.dir).." k.dir.info: "..tostring(k.dir.info).." k.dir.info.path: "..tostring(k.dir.info.path))
