@@ -1,9 +1,10 @@
 "Gamemode"
+
 {
     "name"  "Gleipnir
     "version"   "0.1"
 
-    "author_name"   "+[SP]+ Macendo Saevus"
+    "author_name"   "+[SP]+ Macendo Saevus, Sadoku"
     "author_email"  ""
     "author_url"    ""
 
