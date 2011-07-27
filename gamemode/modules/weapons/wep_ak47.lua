@@ -8,7 +8,7 @@ weapons.Register({
 	SlotPos = 1,
 	IconLetter = "b",
 	DrawCrosshair = true,
-	Base = "weapon_cs_base",
+	Base = "wep_base",
 	Category = "Gleipnir",
 	Spawnable = true,
 	AdminSpawnable = true,
@@ -17,22 +17,25 @@ weapons.Register({
 	Weight = 5,
 	AutoSwitchTo = false,
 	AutoSwitchFrom = false,
-	Primary.Sound = Sound( "Weapon_AK47.Single" ),
-	Primary.Recoil = 1.5,
-	Primary.Damage = 40,
-	Primary.NumShots = 1,
-	Primary.Cone = 0.02,
-	Primary.ClipSize = 25,
-	Primary.Delay = 0.07,
-	Primary.DefaultClip = 50,
-	Primary.Automatic = true,
-	Primary.Ammo = "smg1",
-	Secondary.Automatic = false,
-	Secondary.Ammo = "none",
+	Primary = {
+		Sound = Sound( "Weapon_AK47.Single" ),
+		Recoil = 1.5,
+		Damage = 40,
+		NumShots = 1,
+		Cone = 0.02,
+		ClipSize = 25,
+		Delay = 0.07,
+		DefaultClip = 50,
+		Automatic = true,
+		Ammo = "smg1"
+	},
+	Secondary = {
+		Automatic = false,
+		Ammo = "none"
+	},
 	IronSightsPos = Vector( 6.1, -7, 2.5 ),
 	IronSightsAng = Vector( 2.8, 0, 0 ),
 	Initialize = function(self)
 		self:SetWeaponHoldType("ar2")
 	end,
-end
 }, "ak47", true)
