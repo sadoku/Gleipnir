@@ -95,34 +95,10 @@ local function compileAndPcall(name, path)
 end
 local function LoadModule(moduleTable, parent)
 	if(CheckDependencies(moduleTable)) then
-
---[[		local moduleEnv = setmetatable({
-			moduleLoadedCallback = function(self, name) -- If the module is already loaded, it is instantly called
-		
-			end
-		}, {__index = _G})]]
 		_G['MODULE'] = moduleTable
-		local parent = parent or GLEIP.Modules.Modules
-		--[[
-		_G['MODULE'].GetSub = function(self, sub)
-			print("In GetSub")
-			if(self.Subs == nil or self.Subs[sub] == nil) then GLEIP.Util.print("Module "..self.Name.." tried to load a submodule "..tostring(sub).." which is not specified") return false end
-			print("Passed if check")	
-			local directory = GLEIP.Modules:ConvertPT(moduleTable.path)[sub]
-			PrintTable(directory)
-			local ptable = PreliminaryModuleLoad(directory, sub, self)
-			ptable.parent = self
-			LoadModule(ptable, self)
-			-- CONTINUE HERE, for some reason does not end up in self
-
-		end]]
 		-- You can use this from inside modules to get a call when a module is loaded.
 		-- Only useful during the init phase.
 		moduleTable.callOnLoad = function(self, mod, callback)
-			if GLEIP.Debug then
-				MsgN("parent[mod]: "..tostring(parent[mod]))
-				MsgN("mod: "..tostring(mod))
-			end
 			if GLEIP.Modules.Modules[mod] ~= nil then
 				if GLEIP.Debug then
 					MsgN("Calling callback for "..mod)
@@ -156,10 +132,9 @@ local function LoadModule(moduleTable, parent)
 				AddCSLuaFile(moduleTable.path.."/"..k)
 			end
 		end
-		parent[moduleTable.id] = moduleTable
-		if(type(parent[moduleTable.id].Init) == "function") then
-			parent[moduleTable.id]:Init()
-		end
+		if(type(GLEIP.Modules.Modules[moduleTable.id].Init) == "function") then
+			GLEIP.Modules.Modules[moduleTable.id]:Init()
+		en
 		if callBack[moduleTable.id] then
 			for k,v in pairs(callBack[moduleTable.id]) do
 				MsgN("Callin callback "..moduleTable.id)
@@ -168,7 +143,7 @@ local function LoadModule(moduleTable, parent)
 			end
 		end
 		_G['MODULE'] = nil
-		return parent[moduleTable.id]
+		return GLEIP.Modules.Modules[moduleTable.id]
 	end
 end
 
