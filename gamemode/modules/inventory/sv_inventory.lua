@@ -66,6 +66,7 @@ function MODULE:PlayerInitialSpawn(ply)
 	end
 end
 
+
 function MODULE:Init()
 	concommand.Add("_IDrop", function(ply,cmd,args) self:Drop(ply, args[1]) end)
 	pennis:createTable("inventory", {
@@ -76,12 +77,14 @@ function MODULE:Init()
 	self:callOnLoad("ngwi", function(mod)
 		mod:AddHandler("Pickup",function(ply, args)
 			local ent = Entity(tonumber(args[1]))
+			if ent:IsVehicle() then return end
 			self:AddToInv(ply, {
 				ctype = ent:GetClass(),
 				model = ent:GetModel()
 			})
 			ent:Remove()
-		end)
+		end,"return !e:IsVehicle()")
+
 	end)
 end
 
